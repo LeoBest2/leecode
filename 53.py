@@ -20,5 +20,36 @@
 """
 
 
-def maxSubArray(self, nums: [int]) -> int:
-    pass
+def maxSubArray(nums: [int]) -> int:
+    def _max_sub_array(left: int, right: int) -> int:
+        if left == right:
+            return nums[left]
+        mid = (left + right + 1) // 2
+        max_left, max_right = None, None
+        if left <= mid - 1:
+            max_left = _max_sub_array(left, mid - 1)
+        if right >= mid + 1:
+            max_right = _max_sub_array(mid + 1, right)
+        # 从中间位置向左遍历到最大和
+        i, _sum, max_mid = mid - 1, nums[mid], nums[mid]
+        while i >= left:
+            _sum += nums[i]
+            if _sum >= max_mid:
+                max_mid = _sum
+            i -= 1
+        # 再从中间位置向右遍历
+        j, _sum = mid + 1, max_mid
+        while j <= right:
+            _sum += nums[j]
+            if _sum >= max_mid:
+                max_mid = _sum
+            j += 1
+        return max(max_mid, max_mid if max_left is None else max_left, max_mid if max_right is None else max_right)
+
+    return _max_sub_array(0, len(nums) - 1)
+
+
+print(maxSubArray([-1, -2, -3, 0]))
+print(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))
+print(maxSubArray([-2, -1]))
+print(maxSubArray([-2, -1, 3, -4, 5]))
